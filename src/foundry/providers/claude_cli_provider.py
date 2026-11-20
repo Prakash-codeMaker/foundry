@@ -37,7 +37,12 @@ class ClaudeCliProvider(LLMProvider):
                 env=procenv.clean_env(),
             )
         if proc.returncode != 0:
+            detail = "\n".join(
+                part.strip()[:300]
+                for part in (proc.stdout, proc.stderr)
+                if part and part.strip()
+            )
             raise RuntimeError(
-                f"claude CLI failed ({proc.returncode}): {proc.stderr.strip()[:300]}"
+                f"claude CLI failed ({proc.returncode}): {detail[:600]}"
             )
         return proc.stdout
